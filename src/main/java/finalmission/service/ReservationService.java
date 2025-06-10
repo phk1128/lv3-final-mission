@@ -9,6 +9,7 @@ import finalmission.dto.ReservationRequest;
 import finalmission.dto.ReservationResponse;
 import finalmission.dto.ReservationUpdateRequest;
 import finalmission.repository.ReservationRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -23,6 +24,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberService memberService;
     private final CanceledReservationService canceledReservationService;
+    private final HolidayService holidayService;
 
     @Transactional
     public ReservationResponse save(final long memberId, final ReservationRequest reservationRequest) {
@@ -40,7 +42,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getReservationsByMemberId(final long memberId) {
-        final List<Reservation> reservations = reservationRepository.findByMemberId(memberId);
+        final List<Reservation> reservations = reservationRepository.findByMemberIdWithMember(memberId);
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 
