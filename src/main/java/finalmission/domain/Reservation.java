@@ -2,6 +2,8 @@ package finalmission.domain;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +29,9 @@ public class Reservation {
     @Embedded
     private ReservationTimeSlot reservationTimeSlot;
 
+    @Enumerated(value = EnumType.STRING)
+    private ReservationStatus reservationStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -35,11 +40,13 @@ public class Reservation {
 
     public Reservation(final ReservationDate reservationDate, final ReservationTimeSlot reservationTimeSlot,
                        final Member member,
-                       final int numberOfPeople) {
+                       final int numberOfPeople,
+                       final ReservationStatus reservationStatus) {
         this.reservationDate = reservationDate;
         this.reservationTimeSlot = reservationTimeSlot;
         this.member = member;
         this.numberOfPeople = numberOfPeople;
+        this.reservationStatus = reservationStatus;
     }
 
     public void validateDuplicate(final Reservation other) {

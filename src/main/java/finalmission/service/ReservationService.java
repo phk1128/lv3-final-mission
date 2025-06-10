@@ -3,12 +3,12 @@ package finalmission.service;
 import finalmission.domain.Member;
 import finalmission.domain.Reservation;
 import finalmission.domain.ReservationDate;
+import finalmission.domain.ReservationStatus;
 import finalmission.domain.ReservationTimeSlot;
 import finalmission.dto.ReservationRequest;
 import finalmission.dto.ReservationResponse;
 import finalmission.repository.ReservationRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class ReservationService {
         final ReservationTimeSlot reservationTimeSlot = new ReservationTimeSlot(reservationRequest.startTime(),
                 reservationRequest.endTime());
         final Reservation newRes = new Reservation(reservationDate, reservationTimeSlot, member,
-                reservationRequest.numberOfPeople());
+                reservationRequest.numberOfPeople(), ReservationStatus.SUCCESS);
         final List<Reservation> reservations = reservationRepository.findByMemberId(memberId);
         reservations.forEach(reservation -> reservation.validateDuplicate(newRes));
         return ReservationResponse.from(reservationRepository.save(newRes));
