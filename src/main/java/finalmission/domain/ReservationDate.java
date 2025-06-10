@@ -29,4 +29,8 @@ public class ReservationDate {
     private void validateHoliday(final LocalDate reservationDate) {
         // 공휴일 예약 불가능
     }
+
+    public boolean isEqual(final ReservationDate other) {
+        return this.reservationDate.isEqual(other.reservationDate);
+    }
 }

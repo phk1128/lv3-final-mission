@@ -29,9 +29,6 @@ public class Reservation {
     @Embedded
     private ReservationTimeSlot reservationTimeSlot;
 
-    @Enumerated(value = EnumType.STRING)
-    private ReservationStatus reservationStatus;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -40,18 +37,32 @@ public class Reservation {
 
     public Reservation(final ReservationDate reservationDate, final ReservationTimeSlot reservationTimeSlot,
                        final Member member,
-                       final int numberOfPeople,
-                       final ReservationStatus reservationStatus) {
+                       final int numberOfPeople) {
         this.reservationDate = reservationDate;
         this.reservationTimeSlot = reservationTimeSlot;
         this.member = member;
         this.numberOfPeople = numberOfPeople;
-        this.reservationStatus = reservationStatus;
     }
 
     public void validateDuplicate(final Reservation other) {
-        if (reservationTimeSlot.isInTime(other.reservationTimeSlot)) {
+        if (reservationDate.isEqual(other.reservationDate) && reservationTimeSlot.isInTime(other.reservationTimeSlot)) {
             throw new IllegalArgumentException("이미 예약된 시간 입니다.");
         }
+    }
+
+    public void updateReservationDate(final ReservationDate reservationDate) {
+        this.reservationDate = reservationDate;
+    }
+
+    public void updateReservationTimeSlot(final ReservationTimeSlot reservationTimeSlot) {
+        this.reservationTimeSlot = reservationTimeSlot;
+    }
+
+    public void updateNumberOfPeople(final int numberOfPeople) {
+        this.numberOfPeople = numberOfPeople;
+    }
+
+    public void updateMember(final Member member) {
+        this.member = member;
     }
 }
