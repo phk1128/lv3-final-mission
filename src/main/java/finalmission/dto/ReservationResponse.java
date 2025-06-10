@@ -6,7 +6,7 @@ import finalmission.domain.ReservationTimeSlot;
 
 public record ReservationResponse(
         long id,
-        String name,
+        String email,
         int startTime,
         int endTime,
         int numberOfPeople
@@ -17,7 +17,7 @@ public record ReservationResponse(
         final Member member = reservation.getMember();
         return new ReservationResponse(
                 reservation.getId(),
-                member.getName(),
+                member.getEmail(),
                 reservationTimeSlot.getStartTime(),
                 reservationTimeSlot.getEndTime(),
                 reservation.getNumberOfPeople()

@@ -23,7 +23,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
             throws Exception {
         final HttpServletRequest request = ((ServletWebRequest) webRequest).getRequest();
         final HttpSession session = request.getSession();
-        final Object attribute = session.getAttribute("id");
+        final Object attribute = session.getAttribute("memberId");
         if (attribute instanceof String) {
             return Long.valueOf((String) attribute);
         }
