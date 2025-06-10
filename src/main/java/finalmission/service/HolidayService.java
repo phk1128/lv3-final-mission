@@ -23,6 +23,10 @@ public class HolidayService {
     private final HolidaysRequester holidaysRequester;
     private final HolidayRepository holidayRepository;
 
+    public boolean isHoliday(final LocalDate date) {
+        return holidayRepository.existsByDate(date);
+    }
+
     @Async
     @Transactional(propagation = REQUIRES_NEW)
     @Scheduled(cron = "0 0 0 1 * ?")

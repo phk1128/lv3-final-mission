@@ -16,7 +16,6 @@ public class ReservationDate {
 
     public ReservationDate(final LocalDate reservationDate) {
         validateWeekDay(reservationDate);
-        validateHoliday(reservationDate);
         this.reservationDate = reservationDate;
     }
 
@@ -24,10 +23,6 @@ public class ReservationDate {
         if (reservationDate.getDayOfWeek() == DayOfWeek.SUNDAY || reservationDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
             throw new IllegalArgumentException("주말 예약 불가능");
         }
-    }
-
-    private void validateHoliday(final LocalDate reservationDate) {
-        // 공휴일 예약 불가능
     }
 
     public boolean isEqual(final ReservationDate other) {

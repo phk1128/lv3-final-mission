@@ -27,6 +27,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse save(final long memberId, final ReservationRequest reservationRequest) {
         final Member member = memberService.getMemberById(memberId);
+        validateHoliday(reservationRequest.reservationDate());
         final ReservationDate reservationDate = new ReservationDate(reservationRequest.reservationDate());
         final ReservationTimeSlot reservationTimeSlot = new ReservationTimeSlot(reservationRequest.startTime(),
                 reservationRequest.endTime());
@@ -48,6 +49,7 @@ public class ReservationService {
         final Member member = memberService.getMemberById(memberId);
         final Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다."));
+        validateHoliday(reservationUpdateRequest.reservationDate());
         reservation.updateReservationDate(new ReservationDate(reservationUpdateRequest.reservationDate()));
         reservation.updateNumberOfPeople(reservationUpdateRequest.numberOfPeople());
         reservation.updateReservationTimeSlot(new ReservationTimeSlot(reservationUpdateRequest.startTime(),
@@ -66,5 +68,11 @@ public class ReservationService {
         }
         reservationRepository.deleteById(reservationId);
         canceledReservationService.save(CanceledReservation.from(reservation));
+    }
+
+    private void validateHoliday(final LocalDate date) {
+        if (holidayService.isHoliday(date)) {
+            throw new IllegalArgumentException("공휴일은 예약이 불가능 합니다.");
+        }
     }
 }

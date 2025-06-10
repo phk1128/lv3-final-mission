@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Holiday {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private LocalDate date;
