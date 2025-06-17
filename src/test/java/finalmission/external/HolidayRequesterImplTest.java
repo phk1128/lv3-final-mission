@@ -1,74 +1,113 @@
 package finalmission.external;
 
-import finalmission.dto.HolidayApiResponse;
-import finalmission.dto.HolidayApiResponse.Body;
-import finalmission.dto.HolidayApiResponse.Items;
-import finalmission.dto.HolidayResponse;
-import java.util.function.Function;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestClient;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import finalmission.dto.HolidayResponse;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.web.client.RestClient.RequestHeadersUriSpec;
-import org.springframework.web.client.RestClient.ResponseSpec;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-
-@ExtendWith(MockitoExtension.class)
+@RestClientTest(HolidayRequesterImpl.class)
 class HolidayRequesterImplTest {
 
-    @Mock
-    private RestClient restClient;
-    
-    @Mock
-    private RequestHeadersUriSpec requestHeadersUriSpec;
-    
-    @Mock
-    private ResponseSpec responseSpec;
-    
-    @InjectMocks
+    @Autowired
     private HolidayRequesterImpl holidayRequester;
 
+    @Autowired
+    private MockRestServiceServer server;
+
+    @Value("${public.api.base_url}")
+    private String baseUrl;
+
     @Test
-    void getHolidays_정상_응답시_휴일_목록_반환() {
-        // given
-        HolidayResponse holiday = new HolidayResponse("20241225", "Y", "크리스마스");
-        Items items = new Items(List.of(holiday));
-        Body body = new Body(items);
-        HolidayApiResponse response = new HolidayApiResponse(body);
-        
-        given(restClient.get()).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.uri(any(Function.class))).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.body(HolidayApiResponse.class)).willReturn(response);
-        
-        // when
-        List<HolidayResponse> holidays = holidayRequester.getHolidays(LocalDate.of(2024, 12, 25));
-        
-        // then
-        assertThat(holidays).hasSize(1);
-        assertThat(holidays.get(0).dateName()).isEqualTo("크리스마스");
+    @DisplayName("휴일 목록 반환 성공")
+    void getHolidaysTest() {
+        //given
+        final String expected = """
+                <response>
+                    <header>
+                        <resultCode>00</resultCode>
+                        <resultMsg>NORMAL SERVICE.</resultMsg>
+                    </header>
+                    <body>
+                        <items>
+                            <item>
+                                <dateKind>01</dateKind>
+                                <dateName>크리스마스</dateName>
+                                <isHoliday>Y</isHoliday>
+                                <locdate>20241225</locdate>
+                                <seq>1</seq>
+                            </item>
+                        </items>
+                        <numOfRows>10</numOfRows>
+                        <pageNo>1</pageNo>
+                        <totalCount>1</totalCount>
+                    </body>
+                </response>
+                """;
+
+        server.expect(requestTo(containsString(baseUrl + "/getRestDeInfo")))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(queryParam("pageNo", "1"))
+                .andExpect(queryParam("numOfRows", "100"))
+                .andExpect(queryParam("solYear", "2024"))
+                .andExpect(queryParam("solMonth", "12"))
+                .andRespond(withSuccess(expected, MediaType.APPLICATION_XML));
+
+        //when
+        final List<HolidayResponse> holidays = holidayRequester.getHolidays(LocalDate.of(2024, 12, 25));
+        final HolidayResponse first = holidays.getFirst();
+
+        //then
+        assertAll(
+                () -> assertThat(holidays).hasSize(1),
+                () -> assertThat(first.dateName()).isEqualTo("크리스마스"),
+                () -> assertThat(first.locdate()).isEqualTo("20241225"),
+                () -> assertThat(first.isHoliday()).isEqualTo("Y")
+        );
+        server.verify();
     }
 
     @Test
-    void getHolidays_응답이_null일때_빈_목록_반환() {
-        // given
-        given(restClient.get()).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.uri(any(Function.class))).willReturn(requestHeadersUriSpec);
-        given(requestHeadersUriSpec.retrieve()).willReturn(responseSpec);
-        given(responseSpec.body(HolidayApiResponse.class)).willReturn(null);
-        
-        // when
-        List<HolidayResponse> holidays = holidayRequester.getHolidays(LocalDate.of(2024, 12, 25));
-        
-        // then
+    @DisplayName("응답이 비어있을 때 빈 리스트 반환")
+    void getHolidaysEmptyTest() {
+        //given
+        final String expected = """
+                <response>
+                    <header>
+                        <resultCode>00</resultCode>
+                        <resultMsg>NORMAL SERVICE.</resultMsg>
+                    </header>
+                    <body>
+                       <items/>
+                        <numOfRows>10</numOfRows>
+                        <pageNo>1</pageNo>
+                        <totalCount>1</totalCount>
+                    </body>
+                </response>
+                """;
+
+        server.expect(requestTo(containsString(baseUrl + "/getRestDeInfo")))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(expected, MediaType.APPLICATION_XML));
+
+        //when
+        final List<HolidayResponse> holidays = holidayRequester.getHolidays(LocalDate.of(2024, 6, 15));
+
+        //then
         assertThat(holidays).isEmpty();
     }
 }
