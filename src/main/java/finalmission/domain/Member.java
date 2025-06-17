@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.util.Objects;
 import lombok.Getter;
-import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Getter

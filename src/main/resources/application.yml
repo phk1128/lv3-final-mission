@@ -16,4 +16,5 @@ spring:
 
 public:
   api:
-    key: DmzirBx1o3IFtRJG7rt3GDH4V1gvPEG3OZPhL0bmVfGKcN9l9XNGnZFMG%2FCgZztpMJ75UfC%2FS4NhTBziaMREnA%3D%3D
+    base_url: "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService"
+    key: DmzirBx1o3IFtRJG7rt3GDH4V1gvPEG3OZPhL0bmVfGKcN9l9XNGnZFMG/CgZztpMJ75UfC/S4NhTBziaMREnA==
