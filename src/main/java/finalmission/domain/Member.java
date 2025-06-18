@@ -25,6 +25,8 @@ public class Member extends BaseTimeEntity {
 
     private String password;
 
+    private MemberRole role;
+
     public void validatePassword(final String password) {
         if (!Objects.equals(password, this.password)) {
             throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
