@@ -1,5 +1,7 @@
 package finalmission.domain;
 
+import finalmission.exception.BadRequestException;
+import finalmission.exception.ErrorCode;
 import jakarta.persistence.Embeddable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -21,7 +23,7 @@ public class ReservationDate {
 
     private void validateWeekDay(final LocalDate reservationDate) {
         if (reservationDate.getDayOfWeek() == DayOfWeek.SUNDAY || reservationDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
-            throw new IllegalArgumentException("주말 예약 불가능");
+            throw new BadRequestException(ErrorCode.HOLIDAY_RESERVATION_NOT_ALLOWED);
         }
     }
 

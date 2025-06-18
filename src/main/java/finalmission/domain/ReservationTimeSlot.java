@@ -1,5 +1,7 @@
 package finalmission.domain;
 
+import finalmission.exception.BadRequestException;
+import finalmission.exception.ErrorCode;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,11 +23,11 @@ public class ReservationTimeSlot {
 
     private void validateTimeRange(final int startTime, final int endTime) {
         if (isOutOfRange(startTime) || isOutOfRange(endTime)) {
-            throw new IllegalArgumentException("시간은 0시 ~ 24시까지만 가능 합니다.");
+            throw new BadRequestException(ErrorCode.INVALID_TIME_RANGE);
         }
 
         if (startTime > endTime) {
-            throw new IllegalArgumentException("시작 시간은 끝 시간보다 미래일 수 없습니다.");
+            throw new BadRequestException(ErrorCode.INVALID_TIME_ORDER);
         }
     }
 

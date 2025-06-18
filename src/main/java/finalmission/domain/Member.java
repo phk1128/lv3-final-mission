@@ -1,5 +1,7 @@
 package finalmission.domain;
 
+import finalmission.exception.BadRequestException;
+import finalmission.exception.ErrorCode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +23,7 @@ public class Member {
 
     public void validatePassword(final String password) {
         if (!Objects.equals(password, this.password)) {
-            throw new IllegalArgumentException("패스워드가 일치 하지 않습니다.");
+            throw new BadRequestException(ErrorCode.INVALID_PASSWORD);
         }
     }
 

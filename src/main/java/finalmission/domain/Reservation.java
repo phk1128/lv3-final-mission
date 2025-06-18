@@ -1,9 +1,9 @@
 package finalmission.domain;
 
+import finalmission.exception.BadRequestException;
+import finalmission.exception.ErrorCode;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +33,10 @@ public class Reservation {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+
     private int numberOfPeople;
 
     public Reservation(final ReservationDate reservationDate, final ReservationTimeSlot reservationTimeSlot,
@@ -46,7 +50,7 @@ public class Reservation {
 
     public void validateDuplicate(final Reservation other) {
         if (reservationDate.isEqual(other.reservationDate) && reservationTimeSlot.isInTime(other.reservationTimeSlot)) {
-            throw new IllegalArgumentException("이미 예약된 시간 입니다.");
+            throw new BadRequestException(ErrorCode.DUPLICATE_RESERVATION_TIME);
         }
     }
 

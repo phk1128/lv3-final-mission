@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "ERROR_001", "잘못된 요청입니다."),
+
     DUPLICATE_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "RES_001", "이미 예약된 시간 입니다."),
     WEEKEND_RESERVATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "RES_002", "주말 예약 불가능"),
     HOLIDAY_RESERVATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "RES_003", "공휴일은 예약이 불가능 합니다."),
@@ -25,6 +27,6 @@ public enum ErrorCode {
     EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "API_001", "외부 API 호출 중 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
-    private final String errorCode;
+    private final String code;
     private final String message;
 }

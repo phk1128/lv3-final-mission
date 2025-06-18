@@ -1,17 +1,15 @@
 package finalmission.external;
 
-import finalmission.domain.Holiday;
 import finalmission.dto.HolidayApiResponse;
 import finalmission.dto.HolidayResponse;
+import finalmission.exception.BadGatewayException;
+import finalmission.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
 @Component
 @Slf4j
@@ -26,8 +24,8 @@ public class HolidayRequesterImpl implements HolidaysRequester {
             final HolidayApiResponse response = holidayRestClient.getHolidaysByYearAndMonth(date.getYear(), date.getMonthValue());
             return getHolidayResponseByApiResponse(response);
         } catch (Exception e) {
-            log.error("API 호출 중 예상치 못한 예외 발생");
-            return Collections.emptyList();
+            log.error("API 호출 중 예상치 못한 예외 발생", e);
+            throw new BadGatewayException(ErrorCode.EXTERNAL_API_ERROR);
         }
     }
 

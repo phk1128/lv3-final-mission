@@ -8,10 +8,13 @@ import finalmission.domain.ReservationTimeSlot;
 import finalmission.dto.ReservationRequest;
 import finalmission.dto.ReservationResponse;
 import finalmission.dto.ReservationUpdateRequest;
+import finalmission.exception.BadRequestException;
+import finalmission.exception.ErrorCode;
+import finalmission.exception.ForbiddenException;
+import finalmission.exception.NotFoundException;
 import finalmission.repository.ReservationRepository;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +53,7 @@ public class ReservationService {
     public ReservationResponse update(final long reservationId, final long memberId, final ReservationUpdateRequest reservationUpdateRequest) {
         final Member member = memberService.getMemberById(memberId);
         final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND));
         validateHoliday(reservationUpdateRequest.reservationDate());
         reservation.updateReservationDate(new ReservationDate(reservationUpdateRequest.reservationDate()));
         reservation.updateNumberOfPeople(reservationUpdateRequest.numberOfPeople());
@@ -63,10 +66,10 @@ public class ReservationService {
     @Transactional
     public void delete(final long memberId, final long reservationId) {
         final Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new NoSuchElementException("예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND));
         final Member member = memberService.getMemberById(memberId);
         if (!Objects.equals(reservation.getMember(), member)) {
-            throw new IllegalArgumentException("삭제할 수 없습니다.");
+            throw new ForbiddenException(ErrorCode.RESERVATION_DELETE_FORBIDDEN);
         }
         reservationRepository.deleteById(reservationId);
         canceledReservationService.save(CanceledReservation.from(reservation));
@@ -74,7 +77,7 @@ public class ReservationService {
 
     private void validateHoliday(final LocalDate date) {
         if (holidayService.isHoliday(date)) {
-            throw new IllegalArgumentException("공휴일은 예약이 불가능 합니다.");
+            throw new BadRequestException(ErrorCode.HOLIDAY_RESERVATION_NOT_ALLOWED);
         }
     }
 }
