@@ -1,4 +1,4 @@
-package finalmission.error;
+package finalmission.external;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -37,5 +37,13 @@ public enum HolidayApiResultCode {
 
     public boolean isSuccess() {
         return this == SUCCESS;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
