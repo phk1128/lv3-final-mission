@@ -27,6 +27,12 @@ public class Member extends BaseTimeEntity {
 
     private MemberRole role;
 
+    public Member(final String email, final String password, final MemberRole role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public void validatePassword(final String password) {
         if (!Objects.equals(password, this.password)) {
             throw new BadRequestException(ErrorCode.INVALID_PASSWORD);

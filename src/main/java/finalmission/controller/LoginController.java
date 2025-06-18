@@ -2,8 +2,11 @@ package finalmission.controller;
 
 import finalmission.domain.Member;
 import finalmission.dto.LoginRequest;
+import finalmission.dto.SignUpRequest;
+import finalmission.dto.SignUpResponse;
 import finalmission.service.MemberService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +26,10 @@ public class LoginController {
         session.setAttribute("memberId", member.getId());
         session.setMaxInactiveInterval(60 * 60);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody final SignUpRequest signUpRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signUp(signUpRequest));
     }
 }

@@ -20,6 +20,7 @@ public enum ErrorCode {
 
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "MEMBER_001", "패스워드가 일치 하지 않습니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_002", "회원을 찾을 수 없습니다."),
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "MEMBER_003", "이미 존재하는 이메일입니다."),
 
     INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "TIME_001", "시간은 0시 ~ 24시까지만 가능 합니다."),
     INVALID_TIME_ORDER(HttpStatus.BAD_REQUEST, "TIME_002", "시작 시간은 끝 시간보다 미래일 수 없습니다."),

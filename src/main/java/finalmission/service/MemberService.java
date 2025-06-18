@@ -1,7 +1,11 @@
 package finalmission.service;
 
 import finalmission.domain.Member;
+import finalmission.domain.MemberRole;
 import finalmission.dto.LoginRequest;
+import finalmission.dto.SignUpRequest;
+import finalmission.dto.SignUpResponse;
+import finalmission.exception.BadRequestException;
 import finalmission.exception.ErrorCode;
 import finalmission.exception.NotFoundException;
 import finalmission.repository.MemberRepository;
@@ -27,5 +31,14 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         member.validatePassword(loginRequest.password());
         return member;
+    }
+
+    @Transactional
+    public SignUpResponse signUp(final SignUpRequest signUpRequest) {
+        if (memberRepository.existsByEmail(signUpRequest.email())) {
+            throw new BadRequestException(ErrorCode.DUPLICATE_EMAIL);
+        }
+        final Member member = new Member(signUpRequest.email(), signUpRequest.password(), MemberRole.USER);
+        return SignUpResponse.from(memberRepository.save(member));
     }
 }
