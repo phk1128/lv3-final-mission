@@ -7,10 +7,19 @@ import java.util.List;
 
 @JacksonXmlRootElement(localName = "response")
 public record HolidayApiResponse(
+        @JacksonXmlProperty(localName = "header")
+        Header header,
         @JacksonXmlProperty(localName = "body")
         Body body
 ) {
-    
+
+    public record Header(
+            @JacksonXmlProperty(localName = "resultCode")
+            String resultCode,
+            @JacksonXmlProperty(localName = "resultMsg")
+            String resultMsg
+    ) {}
+
     public record Body(
             @JacksonXmlProperty(localName = "items")
             Items items
