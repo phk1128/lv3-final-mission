@@ -3,6 +3,7 @@ package finalmission.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import finalmission.dto.ReservationRequest;
+import finalmission.exception.BadRequestException;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ class ReservationServiceTest {
         final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2025, 12, 25), 8, 10, 4);
 
         //should
-        assertThatThrownBy(() -> reservationService.save(memberId, reservationRequest)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> reservationService.save(memberId, reservationRequest)).isInstanceOf(
+                BadRequestException.class);
     }
 }
