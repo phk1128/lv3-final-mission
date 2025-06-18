@@ -5,7 +5,7 @@ import finalmission.domain.Member;
 import finalmission.domain.Reservation;
 import finalmission.domain.ReservationDate;
 import finalmission.domain.ReservationTimeSlot;
-import finalmission.dto.ReservationRequest;
+import finalmission.dto.ReservationCreateRequest;
 import finalmission.dto.ReservationResponse;
 import finalmission.dto.ReservationUpdateRequest;
 import finalmission.exception.BadRequestException;
@@ -30,14 +30,14 @@ public class ReservationService {
     private final HolidayService holidayService;
 
     @Transactional
-    public ReservationResponse save(final long memberId, final ReservationRequest reservationRequest) {
+    public ReservationResponse save(final long memberId, final ReservationCreateRequest reservationCreateRequest) {
         final Member member = memberService.getMemberById(memberId);
-        validateHoliday(reservationRequest.reservationDate());
-        final ReservationDate reservationDate = new ReservationDate(reservationRequest.reservationDate());
-        final ReservationTimeSlot reservationTimeSlot = new ReservationTimeSlot(reservationRequest.startTime(),
-                reservationRequest.endTime());
+        validateHoliday(reservationCreateRequest.reservationDate());
+        final ReservationDate reservationDate = new ReservationDate(reservationCreateRequest.reservationDate());
+        final ReservationTimeSlot reservationTimeSlot = new ReservationTimeSlot(reservationCreateRequest.startTime(),
+                reservationCreateRequest.endTime());
         final Reservation newRes = new Reservation(reservationDate, reservationTimeSlot, member,
-                reservationRequest.numberOfPeople());
+                reservationCreateRequest.numberOfPeople());
         final List<Reservation> reservations = reservationRepository.findByMemberId(memberId);
         reservations.forEach(reservation -> reservation.validateDuplicate(newRes));
         return ReservationResponse.from(reservationRepository.save(newRes));

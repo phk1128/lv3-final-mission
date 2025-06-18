@@ -2,7 +2,7 @@ package finalmission.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import finalmission.dto.ReservationRequest;
+import finalmission.dto.ReservationCreateRequest;
 import finalmission.exception.BadRequestException;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -21,10 +21,10 @@ class ReservationServiceTest {
     void saveFailTest() {
         //given
         final long memberId = 1L;
-        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2025, 12, 25), 8, 10, 4);
+        final ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(LocalDate.of(2025, 12, 25), 8, 10, 4);
 
         //should
-        assertThatThrownBy(() -> reservationService.save(memberId, reservationRequest)).isInstanceOf(
+        assertThatThrownBy(() -> reservationService.save(memberId, reservationCreateRequest)).isInstanceOf(
                 BadRequestException.class);
     }
 }

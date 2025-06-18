@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 
 import finalmission.dto.LoginRequest;
-import finalmission.dto.ReservationRequest;
+import finalmission.dto.ReservationCreateRequest;
 import finalmission.dto.ReservationUpdateRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -38,11 +38,11 @@ class ReservationControllerTest {
 
     @Test
     void addReservationTest() {
-        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
+        final ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .sessionId(sessionId)
-                .body(reservationRequest)
+                .body(reservationCreateRequest)
                 .when()
                 .post("/reservation")
                 .then().log().all()
@@ -52,11 +52,11 @@ class ReservationControllerTest {
     @Test
     void getReservationsTest() {
 
-        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
+        final ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .sessionId(sessionId)
-                .body(reservationRequest)
+                .body(reservationCreateRequest)
                 .when()
                 .post("/reservation")
                 .then()
@@ -75,11 +75,11 @@ class ReservationControllerTest {
 
     @Test
     void updateReservationTest() {
-        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
+        final ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
         final int reservationId = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .sessionId(sessionId)
-                .body(reservationRequest)
+                .body(reservationCreateRequest)
                 .when()
                 .post("/reservation")
                 .then()
@@ -112,11 +112,11 @@ class ReservationControllerTest {
 
     @Test
     void deleteReservationTest() {
-        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
+        final ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(LocalDate.of(2025, 12, 24), 8, 10, 4);
         final int reservationId = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .sessionId(sessionId)
-                .body(reservationRequest)
+                .body(reservationCreateRequest)
                 .when()
                 .post("/reservation")
                 .then()

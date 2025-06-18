@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
-public record ReservationRequest(
+public record ReservationCreateRequest(
         @NotBlank(message = "예약 날짜를 입력해주세요")
         @Future(message = "예약 날짜는 현재 날짜 이후여야 합니다")
         LocalDate reservationDate,
