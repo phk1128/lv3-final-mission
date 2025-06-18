@@ -1,5 +1,11 @@
 package finalmission.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+
 import finalmission.dto.LoginRequest;
 import finalmission.dto.ReservationRequest;
 import finalmission.dto.ReservationUpdateRequest;
@@ -13,8 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-
-import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -86,12 +90,12 @@ class ReservationControllerTest {
 
 
         final ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(
-                LocalDate.of(2025, 12, 26), 
-                10, 
-                12, 
+                LocalDate.of(2025, 12, 26),
+                10,
+                12,
                 3
         );
-        
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .sessionId(sessionId)
