@@ -24,7 +24,9 @@ public enum ErrorCode {
     INVALID_TIME_RANGE(HttpStatus.BAD_REQUEST, "TIME_001", "시간은 0시 ~ 24시까지만 가능 합니다."),
     INVALID_TIME_ORDER(HttpStatus.BAD_REQUEST, "TIME_002", "시작 시간은 끝 시간보다 미래일 수 없습니다."),
 
-    EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "API_001", "외부 API 호출 중 오류가 발생했습니다.");
+    EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "API_001", "외부 API 호출 중 오류가 발생했습니다."),
+
+    DUPLICATE_ROOM_NAME(HttpStatus.BAD_REQUEST, "ROOM_001", "회의실 이름은 중복될 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
