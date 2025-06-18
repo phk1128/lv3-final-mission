@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS holiday (
 CREATE TABLE IF NOT EXISTS room (
                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                     name VARCHAR(255),
-    max_number_of_people INT NOT NULL
+    max_number_of_people INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    modified_at TIMESTAMP DEFAULT NOW()
     );
 
 CREATE TABLE IF NOT EXISTS reservation (
