@@ -50,7 +50,7 @@ jobs:
 
   deploy:  # 이 줄의 들여쓰기를 2칸으로 수정 (jobs 레벨과 같게)
     needs: build
-    runs-on: self-hosted  # 대괄호 제거
+    runs-on: prod  # 대괄호 제거
     environment: prod
     steps:
       - name: 체크아웃
