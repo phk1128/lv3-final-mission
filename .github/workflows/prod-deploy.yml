@@ -1,62 +1,76 @@
-name: prod-deploy
+name: Build and Deploy
 
 on:
   push:
-    branches: [ main ]
-
-permissions:
-  contents: read
+    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    runs-on: ubuntu-latest
+    environment: prod
     steps:
-      - name: 레포지토리 체크아웃
+      - name: 체크아웃
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.SUBMODULE_TOKEN }}
           submodules: true
 
-      - name: JDK 21 설치
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
+      - name: 서브모듈 최신화
+        run: |
+          git submodule update --remote          
 
-      - name: gradlew 권한 부여
-        run: chmod +x gradlew
-
-      - name: Gradle 통해 빌드
-        run: ./gradlew clean build
-
-      - name: DockerHub 로그인
+      - name: Docker Hub 로그인
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: 도커 빌드 & 푸시
-        uses: docker/build-push-action@v6
+      - name: JDK 21 설정
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Gradle 설정
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
+
+      - name: Gradle Wrapper로 빌드
+        run: ./gradlew bootJar
+        working-directory: .
+
+      - name: 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          platforms: linux/arm64
           push: true
-          platforms: linux/amd64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/lv2-final-mission-dev:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+          build-args: |
+            SPRING_ACTIVE_PROFILE=dev
 
-  deploy:
+  deploy:  # 이 줄의 들여쓰기를 2칸으로 수정 (jobs 레벨과 같게)
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # 대괄호 제거
+    environment: prod
     steps:
-      - name: EC2 원격 접속 및 Docker compose
-        uses: appleboy/ssh-action@master
+      - name: 체크아웃
+        uses: actions/checkout@v4
         with:
-          username: ${{ secrets.EC2_USERNAME }}
-          host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          script: |
-            sudo docker compose -f docker-compose-dev.yml down
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/lv2-final-mission-dev:latest
-            sudo docker compose -f docker-compose-dev.yml up -d
-            sudo docker image prune -f
+          token: ${{ secrets.SUBMODULE_TOKEN }}
+          submodules: true
+
+      - name: 서브모듈 최신화
+        run: |
+          git submodule update --remote
+
+      - name: Docker Compose 파일 복사
+        run: |
+          sudo cp ./lv3-final-mission-submodule/docker/docker-compose.dev.yml /home/ubuntu/docker/docker-compose.yml
+
+      - name: EC2 배포
+        run: |
+          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+          cd /home/ubuntu/docker
+          sudo docker-compose down
+          sudo docker-compose up -d --build
+          sudo docker image prune -f
