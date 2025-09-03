@@ -47,29 +47,30 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
           build-args: |
             SPRING_ACTIVE_PROFILE=dev
-deploy:
-  needs: build
-  runs-on: [self-hosted]
-  environment: dev
-  steps:
-    - name: 체크아웃
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.SUBMODULE_TOKEN }}
-        submodules: true
 
-    - name: 서브모듈 최신화
-      run: |
-        git submodule update --remote
+  deploy:  # 이 줄의 들여쓰기를 2칸으로 수정 (jobs 레벨과 같게)
+    needs: build
+    runs-on: self-hosted  # 대괄호 제거
+    environment: dev
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SUBMODULE_TOKEN }}
+          submodules: true
 
-    - name: Docker Compose 파일 복사
-      run: |
-        sudo cp ./lv3-final-mission-submodule/docker/docker-compose.dev.yml /home/ubuntu/docker/docker-compose.yml
+      - name: 서브모듈 최신화
+        run: |
+          git submodule update --remote
 
-    - name: EC2 배포
-      run: |
-        docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
-        cd /home/ubuntu/docker
-        docker-compose down
-        docker-compose up -d --build
-        docker image prune -f
+      - name: Docker Compose 파일 복사
+        run: |
+          sudo cp ./lv3-final-mission-submodule/docker/docker-compose.dev.yml /home/ubuntu/docker/docker-compose.yml
+
+      - name: EC2 배포
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+          cd /home/ubuntu/docker
+          docker-compose down
+          docker-compose up -d --build
+          docker image prune -f
