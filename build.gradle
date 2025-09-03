@@ -36,15 +36,6 @@ dependencies {
     testImplementation 'org.awaitility:awaitility:4.2.0'
 }
 
-task copySecret(type: Copy) {
-    from file('./lv2-final-mission-submodule')
-    include 'application*.yml'
-    into 'src/main/resources'
-}
-
-compileJava.dependsOn copySecret
-processResources.dependsOn copySecret
-
 test {
     useJUnitPlatform()
 }
